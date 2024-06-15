@@ -1,0 +1,1062 @@
+{
+	"info": {
+		"_postman_id": "0eb21a62-fbf5-491d-bed6-b5a258532051",
+		"name": "ContextDataService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3833799"
+	},
+	"item": [
+		{
+			"name": "ClientCred-ContextDataService",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"",
+							"postman.setGlobalVariable(\"mdt_CTXDataServiceToken\", data.token_type + ' ' + data.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{client_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{client_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "audience",
+							"value": "contextdataservice",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://{{auth0_domain}}/oauth/token",
+					"protocol": "https",
+					"host": [
+						"{{auth0_domain}}"
+					],
+					"path": [
+						"oauth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save Owner",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"operationName\": \"saveOwner\",\n  \"query\": \"mutation saveOwner($ownerInput: OwnerInput!) {  saveOwner(owner:$ownerInput) {   id name  }}\",\n  \"variables\": {\n    \"ownerInput\": {\n        \"ownerName\": \"Valor Energy Services\"\n    }\n  }\n}"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Owners",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"operationName\": \"getAllOwners\",\n  \"query\": \"query allTrucks {  allOwners {    id    name active}}\",\n  \"variables\": null\n}"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save Fleet",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-ownerId",
+						"value": "2"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"operationName\": \"saveFleet\",\n    \"query\": \"mutation saveFleet($fleetInput: FleetInput!) {  saveFleet(fleet:$fleetInput) {id name fleetIdentifier active  type region}}\",\n    \"variables\": {\n        \"fleetInput\": {\n            \"fleetName\": \"Frac 33b\",\n            \"fleetIdentifier\": \"c16b352a-18bf-4015-9caa-2d5b1b3d0a3e\",\n            \"datavan\": \"518502b\",\n            \"active\": true,\n            \"type\": \"Pumper Only\"\n        }\n    }\n}\n"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set Fleet ActiveStatus",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-ownerId",
+						"value": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"operationName\": \"Set Fleet Active Status\",\n    \"query\": \"mutation setFleetActive($FleetActiveInput: FleetActiveInput!) {  setFleetActive(fleet:$FleetActiveInput) {id name fleetIdentifier datavan active}}\",\n    \"variables\": {\n        \"FleetActiveInput\": {\n            \"fleetIdentifier\": \"5e548a88-c008-4026-89c5-110d9451e2c0\",\n            \"active\": false\n        }\n    }\n}"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save Truck",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-ownerId",
+						"value": "2"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"operationName\": \"saveTruck\",\n    \"query\": \"mutation saveTruck($truckInput: TruckInput!) {  saveTruck(truck:$truckInput) {    id    name    fleetId    version  }}\",\n    \"variables\": {\n        \"truckInput\": {\n            \"truckName\": \"dv004\",\n            \"fleetId\": 152\n        }\n    }\n}"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set Truck In Use",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-ownerId",
+						"value": "2"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"operationName\": \"setTruckInUse\",\n    \"query\": \"mutation setTruckInUse($truckInput: TruckInUseInput!) {  setTruckInUse(truck:$truckInput) {    id    name    fleetId    version  }}\",\n    \"variables\": {\n        \"truckInput\": {\n            \"truckId\": \"123\",\n            \"inUse\": true\n        }\n    }\n}"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set Truck Unit Type",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-ownerId",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"operationName\": \"setTruckUnitType\",\n    \"query\": \"mutation setTruckUnitType($truckId: Long! $unitType: String!) {  setTruckUnitType(truckId:$truckId, unitType:$unitType) {  success  }}\",\n    \"variables\": {\n        \"truckId\": 1,\n        \"unitType\": \"FracPumper\"\n    }\n}"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set fleet for truck",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-ownerId",
+						"value": "2"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"operationName\": \"setTruckInUse\",\n    \"query\": \"mutation SetFleetForTruck($truckId:Long!$fleetId:Long!) {setFleetForTruck(truckId: $truckId, fleetId: $fleetId) { id name fleetId type datasourceId ownerId inUse sensors { id truckId sensorId unitOfMeasure version } version persistenceId assetId assetCategory}}\",\n    \"variables\": {\n        \"truckId\": 2,\n        \"fleetId\": 1\n    }\n}"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Owner By Id",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"operationName\": \"owner\",\n  \"query\": \"query owner($ownerId: Int!) {  owner(id:$ownerId) {    id    name  }}\",\n  \"variables\": {\n     \"ownerId\": 2\n  }\n}"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Fleets",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"operationName\": \"getAllFleets\",\n  \"query\": \"query allFleets {  allFleets { id name fleetIdentifier datavan ownerId active region division type}}\",\n  \"variables\": null\n}"
+				},
+				"url": {
+					"raw": "https://{{CTX_SERVER}}/graphql",
+					"protocol": "https",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Fleets by Owner",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-ownerId",
+						"value": "2"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"operationName\": \"getFleetByOwnerId\",\n  \"query\": \"query FleetsByOwner { fleetsByOwner { id name fleetIdentifier datavan  active  type region division}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Fleet by Name",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-ownerId",
+						"value": "2"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"operationName\": \"getFleetByName\",\n  \"query\": \"query FleetByName($name: String!) { fleetByName(name: $name) { id name fleetIdentifier datavan ownerId version active type region division}}\",\n  \"variables\": {\n  \t\"name\": \"fleet\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Truck",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"operationName\": \"deleteTruck\",\n  \"query\": \"mutation deleteTruck($truckId: Long!) {  deleteTruck(id:$truckId) {    success  }}\",\n  \"variables\": {\n    \"truckId\": 1344267\n  }\n}"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get TruckConfigurations",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-OwnerId",
+						"value": "2",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"operationName\": \"getTruckConfigurations\",\n  \"query\": \"query TruckConfigurations($truckIds:[Long]!){ truckConfigurations(truckIds: $truckIds) {truckId guid timestamp configName configVersion mainBoardVersion eb07Version kernelVersion}}\",\n  \"variables\": {\n  \t\"truckIds\": [616]\n  }\n}\n"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Trucks By Owner",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-ownerId",
+						"value": "1",
+						"type": "text"
+					},
+					{
+						"key": "X-CorrelationId",
+						"value": "postman",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"operationName\": \"gettrucksByOwner\",\n  \"query\": \"query trucksByOwner {  trucksByOwner { name id persistenceId fleetId type datasourceId inUse assetId}}\",\n  \"variables\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{CTX_SERVER}}/graphql",
+					"protocol": "https",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Trucks By Type",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-ownerId",
+						"value": "2"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"operationName\": \"getTrucksByType\",\n  \"query\": \"query TrucksByType($unitType: String!) {  trucksByType(unitType:$unitType) { name  id  fleetId  type datasourceId inUse}}\",\n  \"variables\": {\n  \t\"unitType\": \"FracPumper\"\n  }\n}"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Trucks By FleetID and Owner",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-ownerId",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"operationName\": \"gettrucksByOwnerAndFleet\",\n  \"query\": \"query trucksByOwnerAndFleet($fleetId: Long!) {  trucksByOwnerAndFleet(fleetId:$fleetId) {id name type datasourceId}}\",\n  \"variables\": {\n  \t\"fleetId\": 71\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Datasources for Fleet",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"operationName\": \"getdatasourcesForFleet\",\n    \"query\": \"query getdatasourcesForFleet ($fleetId: Long!) { datasourcesForFleet(fleetId:$fleetId) {id fleetId name databaseName ipAddress databaseHost datasourceIdentifier}}\",\n    \"variables\": {\n        \"fleetId\": 71\n        \n    }\n}"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save Sensor",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-OwnerId",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"operationName\": \"saveSensor\",\n  \"query\": \"mutation saveSensor($sensorInput: SensorInput!) {  saveSensor(sensor:$sensorInput) { id truckId sensorId unitOfMeasure version }}\",\n  \"variables\": {\n    \"sensorInput\": {\n       \"truckId\": 2436,\n       \"sensorId\": \"ENGINE1.HOURS.ETHO\",\n       \"unitOfMeasure\": \"Raw\"\n    }\n  }\n}"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Sensors By Truck",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"operationName\": \"getSensorsByTruck\",\n    \"query\": \"query sensorsByTruck($truckId: Long!) {  sensorsByTruck(truckId: $truckId) { id truckId sensorId unitOfMeasure version }}\",\n    \"variables\": {\n        \"truckId\": 849\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Sensor By Truck And Sensor Id and Unit of Measure",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"operationName\": \"sensorByTruckIdAndSensorIdAndUOM\",\n    \"query\": \"query sensorByTruckIdAndSensorIdAndUOM($truckId: Long!, $sensorId: String!, $unitOfMeasure: String!) {  sensorByTruckIdAndSensorIdAndUOM(truckId: $truckId, sensorId: $sensorId, unitOfMeasure: $unitOfMeasure) { id truckId sensorId unitOfMeasure version }}\",\n    \"variables\": {\n        \"truckId\": 849,\n        \"sensorId\": \"ENGINE1.HOURS.ETHO\",\n        \"unitOfMeasure\": \"RAW\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Sensors",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"operationName\": \"getAllSensors\",\n    \"query\": \"query allSensors {  allSensors {id truckId sensorId unitOfMeasure version}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save Customer",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-OwnerId",
+						"value": "2"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"operationName\": \"saveCustomer\",\n \"query\": \"mutation saveCustomer($customerInput: CustomerInput!) {  saveCustomer(customer:$customerInput) { id customerName ownerId allowAllTrucks allowedTruckIds allowedSensors { sensorName sensorUom } version }}\",\n \"variables\": {\n   \"customerInput\": {\n      \"customerName\": \"ServiceNow\",\n      \"allowAllTrucks\": true,\n      \"allowedTruckIds\": [],\n      \"allowedSensors\": []\n   }\n }\n}"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Fleet",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-OwnerId",
+						"value": "1558",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"operationName\": \"deleteFleet\",\n  \"query\": \"mutation deleteFleet($id: Long!) {  deleteFleet(id:$id) {    success  }}\",\n  \"variables\": {\n    \"id\": 1722\n  }\n}"
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get InActive Fleet For Owner",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{mdt_CTXDataServiceToken}}"
+					},
+					{
+						"key": "X-ownerId",
+						"value": "2"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"operationName\": \"getInActiveFleetForOwner\",\n  \"query\": \"query InactiveFleetForOwner { inactiveFleetForOwner { id name datavan active type division}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{CTX_SERVER}}/graphql",
+					"protocol": "http",
+					"host": [
+						"{{CTX_SERVER}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
